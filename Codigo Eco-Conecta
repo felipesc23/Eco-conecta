@@ -1,0 +1,1049 @@
+#include <stdio.h> 
+
+#include <string.h> 
+
+  
+
+#define MAX_STR_LEN 100 
+
+  
+
+typedef struct { 
+
+    char nome[MAX_STR_LEN]; 
+
+    char email[MAX_STR_LEN]; 
+
+    char senha[MAX_STR_LEN]; 
+
+} Usuario; 
+
+  
+
+typedef struct { 
+
+    char nome[MAX_STR_LEN]; 
+
+    char descricao[MAX_STR_LEN]; 
+
+    char logo[MAX_STR_LEN]; 
+
+    char atividades[MAX_STR_LEN]; 
+
+    char necessidades[MAX_STR_LEN]; 
+
+    char organizacao[MAX_STR_LEN]; 
+
+} Projeto; 
+
+  
+
+// Funções de Gerenciamento de Projetos 
+
+void registrar_projeto(char *email); 
+
+void editar_projeto(char *email); 
+
+void listar_projetos_organizacao(char *email); 
+
+void avaliar_voluntarios(char *email); 
+
+  
+
+// Funções de Gerenciamento de Voluntários 
+
+void verificar_voluntariado(char *email); 
+
+void editar_informacoes_voluntario(char *email); 
+
+void enviar_feedback(char *email); 
+
+  
+
+// Funções de Gerenciamento de Usuários 
+
+int verificar_usuario(char *email, char *senha, char *arquivo); 
+
+void salvar_usuario(char *nome, char *email, char *senha, char *arquivo); 
+
+  
+
+// Funções de Notificações 
+
+void enviar_notificacao(char *mensagem, char *destinatario); 
+
+void verificar_notificacoes(char *email); 
+
+int inscrito_em_projeto(char *voluntario, char *projeto); 
+
+  
+
+void menu_voluntario(char *email) { 
+
+    int opcao; 
+
+    do { 
+
+        printf("\n--- Menu Voluntário ---\n"); 
+
+        printf("1. Verificar voluntariado\n"); 
+
+        printf("2. Editar informações\n"); 
+
+        printf("3. Enviar feedback e experiência\n"); 
+
+        printf("4. Conversar com organização\n"); 
+
+        printf("0. Sair\n"); 
+
+        printf("Escolha uma opção: "); 
+
+        scanf("%d", &opcao); 
+
+  
+
+        switch (opcao) { 
+
+            case 1: 
+
+                verificar_voluntariado(email); 
+
+                break; 
+
+            case 2: 
+
+                editar_informacoes_voluntario(email); 
+
+                break; 
+
+            case 3: 
+
+                enviar_feedback(email); 
+
+                break; 
+
+            case 4: { 
+
+                char mensagem[MAX_STR_LEN]; 
+
+                char organizacao[MAX_STR_LEN]; 
+
+                printf("Digite o email da organização: "); 
+
+                scanf(" %[^\n]%*c", organizacao); 
+
+                printf("Digite a mensagem: "); 
+
+                scanf(" %[^\n]%*c", mensagem); 
+
+                enviar_notificacao(mensagem, organizacao); 
+
+                break; 
+
+            } 
+
+            case 0: 
+
+                printf("Saindo...\n"); 
+
+                break; 
+
+            default: 
+
+                printf("Opção inválida! Tente novamente.\n"); 
+
+        } 
+
+    } while (opcao != 0); 
+
+} 
+
+  
+
+void menu_organizacao(char *email) { 
+
+    int opcao; 
+
+    do { 
+
+        printf("\n--- Menu Organização ---\n"); 
+
+        printf("1. Gerenciar projetos\n"); 
+
+        printf("2. Conversar com voluntário\n"); 
+
+        printf("3. Editar projetos\n"); 
+
+        printf("4. Avaliar voluntários\n"); 
+
+        printf("0. Sair\n"); 
+
+        printf("Escolha uma opção: "); 
+
+        scanf("%d", &opcao); 
+
+  
+
+        switch (opcao) { 
+
+            case 1: 
+
+                listar_projetos_organizacao(email); 
+
+                break; 
+
+            case 2: { 
+
+                char mensagem[MAX_STR_LEN]; 
+
+                char voluntario[MAX_STR_LEN]; 
+
+                printf("Digite o email do voluntário: "); 
+
+                scanf(" %[^\n]%*c", voluntario); 
+
+                printf("Digite a mensagem: "); 
+
+                scanf(" %[^\n]%*c", mensagem); 
+
+                enviar_notificacao(mensagem, voluntario); 
+
+                break; 
+
+            } 
+
+            case 3: 
+
+                editar_projeto(email); 
+
+                break; 
+
+            case 4: 
+
+                avaliar_voluntarios(email); 
+
+                break; 
+
+            case 0: 
+
+                printf("Saindo...\n"); 
+
+                break; 
+
+            default: 
+
+                printf("Opção inválida! Tente novamente.\n"); 
+
+        } 
+
+    } while (opcao != 0); 
+
+} 
+
+  
+
+int main() { 
+
+    int opcao; 
+
+    char email[MAX_STR_LEN], senha[MAX_STR_LEN]; 
+
+    char nome[MAX_STR_LEN]; 
+
+  
+
+    printf("Eco Conecta-RS\n"); 
+
+    printf("Seja bem-vindo!\n"); 
+
+  
+
+    do { 
+
+        printf("\nEscolha seu perfil:\n"); 
+
+        printf("1. Voluntário\n"); 
+
+        printf("2. Organização\n"); 
+
+        printf("0. Sair\n"); 
+
+        printf("Escolha uma opção: "); 
+
+        scanf("%d", &opcao); 
+
+  
+
+        if (opcao == 0) { 
+
+            printf("Saindo...\n"); 
+
+            break; 
+
+        } 
+
+  
+
+        printf("\n1. Login\n"); 
+
+        printf("2. Cadastro\n"); 
+
+        printf("Escolha uma opção: "); 
+
+        int sub_opcao; 
+
+        scanf("%d", &sub_opcao); 
+
+  
+
+        printf("Digite seu email: "); 
+
+        scanf(" %[^\n]%*c", email); 
+
+        printf("Digite sua senha: "); 
+
+        scanf(" %[^\n]%*c", senha); 
+
+  
+
+        if (sub_opcao == 1) { // Login 
+
+            if (opcao == 1) { // Voluntário 
+
+                if (verificar_usuario(email, senha, "voluntarios.txt")) { 
+
+                    verificar_notificacoes(email); 
+
+                    menu_voluntario(email); 
+
+                } else { 
+
+                    printf("Email ou senha incorretos!\n"); 
+
+                } 
+
+            } else if (opcao == 2) { // Organização 
+
+                if (verificar_usuario(email, senha, "organizacoes.txt")) { 
+
+                    verificar_notificacoes(email); 
+
+                    menu_organizacao(email); 
+
+                } else { 
+
+                    printf("Email ou senha incorretos!\n"); 
+
+                } 
+
+            } 
+
+        } else if (sub_opcao == 2) { // Cadastro 
+
+            printf("Digite seu nome completo: "); 
+
+            scanf(" %[^\n]%*c", nome); 
+
+            if (opcao == 1) { // Voluntário 
+
+                salvar_usuario(nome, email, senha, "voluntarios.txt"); 
+
+                printf("Cadastro realizado com sucesso!\n"); 
+
+            } else if (opcao == 2) { // Organização 
+
+                salvar_usuario(nome, email, senha, "organizacoes.txt"); 
+
+                printf("Cadastro realizado com sucesso!\n"); 
+
+            } 
+
+        } else { 
+
+            printf("Opção inválida! Tente novamente.\n"); 
+
+        } 
+
+  
+
+    } while (opcao != 0); 
+
+  
+
+    return 0; 
+
+} 
+
+  
+
+void registrar_projeto(char *email) { 
+
+    Projeto projeto; 
+
+  
+
+    printf("\n--- Registrar Projeto ---\n"); 
+
+    printf("Nome do Projeto: "); 
+
+    scanf(" %[^\n]%*c", projeto.nome); 
+
+    printf("Descrição do projeto: "); 
+
+    scanf(" %[^\n]%*c", projeto.descricao); 
+
+    printf("Insira a logo do projeto: "); 
+
+    scanf(" %[^\n]%*c", projeto.logo); 
+
+    printf("Atividades realizadas: "); 
+
+    scanf(" %[^\n]%*c", projeto.atividades); 
+
+    printf("Detalhar necessidades: "); 
+
+    scanf(" %[^\n]%*c", projeto.necessidades); 
+
+  
+
+    strcpy(projeto.organizacao, email); 
+
+  
+
+    FILE *file = fopen("projetos.txt", "a"); 
+
+    if (file == NULL) { 
+
+        printf("Erro ao abrir o arquivo de projetos!\n"); 
+
+        return; 
+
+    } 
+
+  
+
+    fprintf(file, "%s;%s;%s;%s;%s;%s\n", projeto.nome, projeto.descricao, projeto.logo, projeto.atividades, projeto.necessidades, projeto.organizacao); 
+
+    fclose(file); 
+
+  
+
+    printf("Projeto registrado com sucesso!\n"); 
+
+} 
+
+  
+
+void editar_projeto(char *email) { 
+
+    char nome_projeto[MAX_STR_LEN]; 
+
+    Projeto projeto; 
+
+    int encontrado = 0; 
+
+  
+
+    printf("\n--- Editar Projeto ---\n"); 
+
+    printf("Digite o nome do projeto a ser editado: "); 
+
+    scanf(" %[^\n]%*c", nome_projeto); 
+
+  
+
+    FILE *file = fopen("projetos.txt", "r"); 
+
+    FILE *temp = fopen("temp.txt", "w"); 
+
+    if (file == NULL || temp == NULL) { 
+
+        printf("Erro ao abrir os arquivos de projeto!\n"); 
+
+        return; 
+
+    } 
+
+  
+
+    while (fscanf(file, " %[^;];%[^;];%[^;];%[^;];%[^;];%[^\n]", projeto.nome, projeto.descricao, projeto.logo, projeto.atividades, projeto.necessidades, projeto.organizacao) != EOF) { 
+
+        if (strcmp(projeto.nome, nome_projeto) == 0 && strcmp(projeto.organizacao, email) == 0) { 
+
+            encontrado = 1; 
+
+            printf("Nova descrição do projeto: "); 
+
+            scanf(" %[^\n]%*c", projeto.descricao); 
+
+            printf("Nova logo do projeto: "); 
+
+            scanf(" %[^\n]%*c", projeto.logo); 
+
+            printf("Novas atividades realizadas: "); 
+
+            scanf(" %[^\n]%*c", projeto.atividades); 
+
+            printf("Novas necessidades: "); 
+
+            scanf(" %[^\n]%*c", projeto.necessidades); 
+
+        } 
+
+        fprintf(temp, "%s;%s;%s;%s;%s;%s\n", projeto.nome, projeto.descricao, projeto.logo, projeto.atividades, projeto.necessidades, projeto.organizacao); 
+
+    } 
+
+  
+
+    fclose(file); 
+
+    fclose(temp); 
+
+  
+
+    remove("projetos.txt"); 
+
+    rename("temp.txt", "projetos.txt"); 
+
+  
+
+    if (encontrado) { 
+
+        printf("Projeto editado com sucesso!\n"); 
+
+    } else { 
+
+        printf("Projeto não encontrado ou você não tem permissão para editá-lo!\n"); 
+
+    } 
+
+} 
+
+  
+
+void listar_projetos_organizacao(char *email) { 
+
+    Projeto projeto; 
+
+    int opcao; 
+
+  
+
+    printf("\n--- Gerenciar Projetos ---\n"); 
+
+    printf("1. Listar projetos\n"); 
+
+    printf("2. Registrar novo projeto\n"); 
+
+    printf("3. Editar projeto existente\n"); 
+
+    printf("0. Voltar\n"); 
+
+    printf("Escolha uma opção: "); 
+
+    scanf("%d", &opcao); 
+
+  
+
+    switch (opcao) { 
+
+        case 1: { 
+
+            FILE *file = fopen("projetos.txt", "r"); 
+
+            if (file == NULL) { 
+
+                printf("Erro ao abrir o arquivo de projetos!\n"); 
+
+                return; 
+
+            } 
+
+  
+
+            printf("\n--- Lista de Projetos ---\n"); 
+
+            while (fscanf(file, " %[^;];%[^;];%[^;];%[^;];%[^;];%[^\n]", projeto.nome, projeto.descricao, projeto.logo, projeto.atividades, projeto.necessidades, projeto.organizacao) != EOF) { 
+
+                if (strcmp(projeto.organizacao, email) == 0) { 
+
+                    printf("Nome: %s\n", projeto.nome); 
+
+                    printf("Descrição: %s\n", projeto.descricao); 
+
+                    printf("Logo: %s\n", projeto.logo); 
+
+                    printf("Atividades: %s\n", projeto.atividades); 
+
+                    printf("Necessidades: %s\n", projeto.necessidades); 
+
+                    printf("-----------------------------------\n"); 
+
+                } 
+
+            } 
+
+  
+
+            fclose(file); 
+
+            break; 
+
+        } 
+
+        case 2: 
+
+            registrar_projeto(email); 
+
+            break; 
+
+        case 3: 
+
+            editar_projeto(email); 
+
+            break; 
+
+        case 0: 
+
+            printf("Voltando ao menu anterior...\n"); 
+
+            break; 
+
+        default: 
+
+            printf("Opção inválida! Tente novamente.\n"); 
+
+    } 
+
+} 
+
+  
+
+void avaliar_voluntarios(char *email) { 
+
+    char nome_voluntario[MAX_STR_LEN]; 
+
+    int nota; 
+
+    char comentario[MAX_STR_LEN]; 
+
+    FILE *file = fopen("avaliacoes.txt", "a"); 
+
+    if (file == NULL) { 
+
+        printf("Erro ao abrir o arquivo de avaliações!\n"); 
+
+        return; 
+
+    } 
+
+  
+
+    printf("\n--- Avaliar Voluntários ---\n"); 
+
+    printf("Digite o nome do voluntário: "); 
+
+    scanf(" %[^\n]%*c", nome_voluntario); 
+
+    printf("Digite a nota (0 a 10): "); 
+
+    scanf("%d", &nota); 
+
+    printf("Digite um comentário: "); 
+
+    scanf(" %[^\n]%*c", comentario); 
+
+  
+
+    fprintf(file, "%s;%s;%d;%s\n", email, nome_voluntario, nota, comentario); 
+
+    fclose(file); 
+
+  
+
+    printf("Avaliação registrada com sucesso!\n"); 
+
+} 
+
+  
+
+void verificar_voluntariado(char *email) { 
+
+    Projeto projeto; 
+
+    char escolha; 
+
+    FILE *file = fopen("projetos.txt", "r"); 
+
+    if (file == NULL) { 
+
+        printf("Erro ao abrir o arquivo de projetos!\n"); 
+
+        return; 
+
+    } 
+
+  
+
+    printf("\n--- Verificar Voluntariado ---\n"); 
+
+    while (fscanf(file, " %[^;];%[^;];%[^;];%[^;];%[^;];%[^\n]", projeto.nome, projeto.descricao, projeto.logo, projeto.atividades, projeto.necessidades, projeto.organizacao) != EOF) { 
+
+        printf("Nome: %s\n", projeto.nome); 
+
+        printf("Descrição: %s\n", projeto.descricao); 
+
+        printf("Logo: %s\n", projeto.logo); 
+
+        printf("Atividades: %s\n", projeto.atividades); 
+
+        printf("Necessidades: %s\n", projeto.necessidades); 
+
+        printf("Organização: %s\n", projeto.organizacao); 
+
+        printf("Deseja se inscrever neste projeto? (s/n): "); 
+
+        scanf(" %c", &escolha); 
+
+        if (escolha == 's' || escolha == 'S') { 
+
+            FILE *inscricoes = fopen("inscricoes.txt", "a"); 
+
+            if (inscricoes == NULL) { 
+
+                printf("Erro ao abrir o arquivo de inscrições!\n"); 
+
+                fclose(file); 
+
+                return; 
+
+            } 
+
+            fprintf(inscricoes, "%s;%s\n", email, projeto.nome); 
+
+            fclose(inscricoes); 
+
+            printf("Inscrição realizada com sucesso!\n"); 
+
+            break; 
+
+        } else { 
+
+            printf("Próximo projeto...\n"); 
+
+        } 
+
+    } 
+
+  
+
+    fclose(file); 
+
+} 
+
+  
+
+void editar_informacoes_voluntario(char *email) { 
+
+    Usuario voluntario; 
+
+    FILE *file = fopen("voluntarios.txt", "r"); 
+
+    FILE *temp = fopen("temp.txt", "w"); 
+
+    if (file == NULL || temp == NULL) { 
+
+        printf("Erro ao abrir os arquivos de voluntários!\n"); 
+
+        return; 
+
+    } 
+
+  
+
+    printf("\n--- Editar Informações Voluntário ---\n"); 
+
+    while (fscanf(file, " %[^;];%[^;];%[^\n]", voluntario.nome, voluntario.email, voluntario.senha) != EOF) { 
+
+        if (strcmp(voluntario.email, email) == 0) { 
+
+            printf("Novo nome: "); 
+
+            scanf(" %[^\n]%*c", voluntario.nome); 
+
+            printf("Nova senha: "); 
+
+            scanf(" %[^\n]%*c", voluntario.senha); 
+
+        } 
+
+        fprintf(temp, "%s;%s;%s\n", voluntario.nome, voluntario.email, voluntario.senha); 
+
+    } 
+
+  
+
+    fclose(file); 
+
+    fclose(temp); 
+
+  
+
+    remove("voluntarios.txt"); 
+
+    rename("temp.txt", "voluntarios.txt"); 
+
+  
+
+    printf("Informações editadas com sucesso!\n"); 
+
+} 
+
+  
+
+void enviar_feedback(char *email) { 
+
+    char nome_organizacao[MAX_STR_LEN]; 
+
+    int nota; 
+
+    char comentario[MAX_STR_LEN]; 
+
+  
+
+    printf("\n--- Enviar Feedback e Experiência ---\n"); 
+
+    printf("Digite o nome da organização: "); 
+
+    scanf(" %[^\n]%*c", nome_organizacao); 
+
+  
+
+    if (!inscrito_em_projeto(email, nome_organizacao)) { 
+
+        printf("Você não está inscrito em nenhum projeto desta organização!\n"); 
+
+        return; 
+
+    } 
+
+  
+
+    printf("Digite a nota (0 a 10): "); 
+
+    scanf("%d", &nota); 
+
+    printf("Digite um comentário: "); 
+
+    scanf(" %[^\n]%*c", comentario); 
+
+  
+
+    FILE *file = fopen("feedbacks.txt", "a"); 
+
+    if (file == NULL) { 
+
+        printf("Erro ao abrir o arquivo de feedbacks!\n"); 
+
+        return; 
+
+    } 
+
+  
+
+    fprintf(file, "%s;%s;%d;%s\n", email, nome_organizacao, nota, comentario); 
+
+    fclose(file); 
+
+  
+
+    printf("Feedback enviado com sucesso!\n"); 
+
+} 
+
+  
+
+int verificar_usuario(char *email, char *senha, char *arquivo) { 
+
+    char linha[MAX_STR_LEN]; 
+
+    Usuario usuario; 
+
+    FILE *file = fopen(arquivo, "r"); 
+
+    if (file == NULL) { 
+
+        return 0; 
+
+    } 
+
+  
+
+    while (fscanf(file, " %[^;];%[^;];%[^\n]", usuario.nome, usuario.email, usuario.senha) != EOF) { 
+
+        if (strcmp(usuario.email, email) == 0 && strcmp(usuario.senha, senha) == 0) { 
+
+            fclose(file); 
+
+            return 1; 
+
+        } 
+
+    } 
+
+  
+
+    fclose(file); 
+
+    return 0; 
+
+} 
+
+  
+
+void salvar_usuario(char *nome, char *email, char *senha, char *arquivo) { 
+
+    FILE *file = fopen(arquivo, "a"); 
+
+    if (file == NULL) { 
+
+        printf("Erro ao abrir o arquivo de usuários!\n"); 
+
+        return; 
+
+    } 
+
+  
+
+    fprintf(file, "%s;%s;%s\n", nome, email, senha); 
+
+    fclose(file); 
+
+} 
+
+  
+
+void enviar_notificacao(char *mensagem, char *destinatario) { 
+
+    FILE *file = fopen("notificacoes.txt", "a"); 
+
+    if (file == NULL) { 
+
+        printf("Erro ao abrir o arquivo de notificações!\n"); 
+
+        return; 
+
+    } 
+
+  
+
+    fprintf(file, "%s;%s\n", destinatario, mensagem); 
+
+    fclose(file); 
+
+  
+
+    printf("Notificação enviada com sucesso!\n"); 
+
+} 
+
+  
+
+void verificar_notificacoes(char *email) { 
+
+    char destinatario[MAX_STR_LEN], mensagem[MAX_STR_LEN]; 
+
+    int encontrado = 0; 
+
+  
+
+    FILE *file = fopen("notificacoes.txt", "r"); 
+
+    FILE *temp = fopen("temp_notificacoes.txt", "w"); 
+
+    if (file == NULL || temp == NULL) { 
+
+        printf("Erro ao abrir o arquivo de notificações!\n"); 
+
+        return; 
+
+    } 
+
+  
+
+    while (fscanf(file, " %[^;];%[^\n]", destinatario, mensagem) != EOF) { 
+
+        if (strcmp(destinatario, email) == 0) { 
+
+            printf("Nova notificação: %s\n", mensagem); 
+
+            encontrado = 1; 
+
+        } else { 
+
+            fprintf(temp, "%s;%s\n", destinatario, mensagem); 
+
+        } 
+
+    } 
+
+  
+
+    fclose(file); 
+
+    fclose(temp); 
+
+  
+
+    remove("notificacoes.txt"); 
+
+    rename("temp_notificacoes.txt", "notificacoes.txt"); 
+
+  
+
+    if (!encontrado) { 
+
+        printf("Nenhuma nova notificação.\n"); 
+
+    } 
+
+} 
+
+  
+
+int inscrito_em_projeto(char *voluntario, char *projeto) { 
+
+    char voluntario_inscrito[MAX_STR_LEN], projeto_inscrito[MAX_STR_LEN]; 
+
+    FILE *file = fopen("inscricoes.txt", "r"); 
+
+    if (file == NULL) { 
+
+        return 0; 
+
+    } 
+
+  
+
+    while (fscanf(file, " %[^;];%[^\n]", voluntario_inscrito, projeto_inscrito) != EOF) { 
+
+        if (strcmp(voluntario_inscrito, voluntario) == 0 && strcmp(projeto_inscrito, projeto) == 0) { 
+
+            fclose(file); 
+
+            return 1; 
+
+        } 
+
+    } 
+
+  
+
+    fclose(file); 
+
+    return 0; 
+
+} 
+
+ 
